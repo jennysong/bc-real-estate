@@ -1,0 +1,35 @@
+{
+    "name": "Redfin Extension",
+    "description" : "Redfin Extension",
+    "version": "1.0",
+    "browser_action": {
+        "default_popup": "hello.html",
+        "default_icon": "hello_extensions.png"
+    },
+    "manifest_version": 2,
+    "permissions": [
+        "storage",
+        "tabs",
+        "http://*/*",
+        "https://*/*",
+        "<all_urls>",
+        "webRequestBlocking",
+        "webNavigation",
+        "https://www.bcassessment.ca/*"
+    ],
+    "optional_permissions": [
+        "webRequest"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+F",
+                "mac": "MacCtrl+Shift+F"
+            },
+            "description": "Open Extension"
+        }
+    }
+}
