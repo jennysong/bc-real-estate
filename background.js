@@ -18,16 +18,17 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.contentScriptQuery == "getBCAssessment") {
-            var homeId;
+            var homeId, assessmentLink;
             var BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(request.address);
             fetch(BCAGetByAddress)
                 .then(response => response.json())
                 .then(data => {
                     homeId = data[0].value
-                    return fetch('https://www.bcassessment.ca//Property/Info/' + homeId)
+                    assessmentLink = 'https://www.bcassessment.ca//Property/Info/' + homeId
+                    return fetch(assessmentLink)
                 })
                 .then(response => response.text())
-                .then(assessInfo => sendResponse({doc: assessInfo, homeId: homeId}))
+                .then(assessInfo => sendResponse({doc: assessInfo, homeId: homeId, assessmentLink: assessmentLink}))
             return true;
         }
     }

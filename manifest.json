@@ -3,7 +3,7 @@
     "description" : "Redfin Extension",
     "version": "1.0",
     "browser_action": {
-        "default_popup": "redfin_extension.html",
+        "default_popup": "popup.html",
         "default_icon": "redfin_extension.png"
     },
     "manifest_version": 2,

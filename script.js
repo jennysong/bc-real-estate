@@ -1,14 +1,19 @@
 var totalAssessment, landAssessment, buildingAssessment
 var address = document.getElementsByClassName("street-address")[0].innerHTML;
 
-chrome.runtime.sendMessage(
-    {contentScriptQuery: "getBCAssessment", address: address},
-    (response) => extractAssessInfo(response)
-);
+
+if (!document.getElementsByClassName("redfin-extension")[0]) {
+    console.log('calling BC Assessment...')
+    chrome.runtime.sendMessage(
+        {contentScriptQuery: "getBCAssessment", address: address},
+        (response) => extractAssessInfo(response)
+    );
+}
 
 var extractAssessInfo = (obj) => {
-    var parser = new DOMParser();
-	var htmldoc = parser.parseFromString(obj.doc, 'text/html');
+    var parser = new DOMParser()
+    var htmldoc = parser.parseFromString(obj.doc, 'text/html')
+    var assessmentLink = obj.assessmentLink
 
     if (htmldoc.getElementById('usage-validation-region')) {
         window.open('https://www.bcassessment.ca//Property/Info/' + obj.homeId)
@@ -18,14 +23,16 @@ var extractAssessInfo = (obj) => {
         totalAssessment = htmldoc.getElementById('lblTotalAssessedValue').textContent
         landAssessment = htmldoc.getElementById('lblTotalAssessedLand').textContent
         buildingAssessment = htmldoc.getElementById('lblTotalAssessedBuilding').textContent
-        console.log(totalAssessment)
-        console.log(landAssessment)
-        console.log(buildingAssessment)
+        chrome.storage.sync.set({'redfin': {
+            totalAssessment: totalAssessment,
+            landAssessment: landAssessment,
+            buildingAssessment: buildingAssessment,
+            assessmentLink: assessmentLink
+        }})
         createAssessInfo()
     }
     
 }
-
 
 var createAssessInfo = () => {
     // Total 
@@ -87,12 +94,12 @@ var createAssessInfo = () => {
     parentNode.appendChild(totalAssess);
     parentNode.appendChild(landAssess);
     parentNode.appendChild(buildingAssess);
+    parentNode.classList.add("redfin-extension");
 }
 
-
-// https://www.bcassessment.ca/Property/Search/GetByAddress?addr=319%20Prior%20St
-// https://www.bcassessment.ca//Property/Info/QTAwMDAwMU1OQw==
-
-
-
-
+chrome.storage.sync.get(['mortgage'], function(result){
+    if ('mortgage' in result)
+    {
+         console.log(result['mortgage']);
+    }
+});
