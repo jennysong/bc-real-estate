@@ -10,11 +10,7 @@
     "permissions": [
         "storage",
         "tabs",
-        "http://*/*",
-        "https://*/*",
-        "<all_urls>",
-        "webRequestBlocking",
-        "webNavigation",
+        "https://www.redfin.ca/*",
         "https://www.bcassessment.ca/*"
     ],
     "optional_permissions": [
