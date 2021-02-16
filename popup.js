@@ -1,13 +1,50 @@
 $(function() {
-
-    var address, BCAGetByAddress, assessmentLink,
-        assessmentAddress, totalAssessment, landAssessment, buildingAssessment
+    let collectDataFromBCADoc = (doc, map) => {
+        let output = {}
+        if (doc) {
+            Object.keys(map).forEach(key => {
+                switch(typeof(map[key])) {
+                    case "string":
+                        let targetElement = doc.getElementById(map[key])
+                        if (targetElement)
+                            output[key] = targetElement.textContent
+                        else {
+                            console.warn(`cannot find element by id: ${map[key]}`)
+                            output[key] = 'Unknown'   
+                        }
+                        break;
+                    case "object":
+                        output[key] = collectDataFromBCADoc(doc, map[key])
+                        break;
+                    default:
+                        console.warn(`unexpected type: ${typeof(map[key])}`)
+                }
+            })
+        }
+        return output
+    }
+    
+    let propertyIdMap = {
+        address: "mainaddresstitle",
+        latest: {
+            totalValue: "lblTotalAssessedValue",
+            landValue: "lblTotalAssessedLand",
+            buildingValue: "lblTotalAssessedBuilding"
+        },
+        previous: {
+            totalValue: "lblPreviousAssessedValue",
+            landValue: "lblPreviousAssessedLand",
+            buildingValue: "lblPreviousAssessedBuilding"
+        }
+    }
+    
+    var unitAddress, BCAGetByAddress, assessmentLink
 
     chrome.storage.sync.get(['redfin'], function(result) {
-        address = result['redfin'].address
-        $('#address').text(address)
+        unitAddress = result['redfin'].address
+        $('#address').text(unitAddress)
         
-        BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(address);
+        BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress);
         fetch(BCAGetByAddress)
             .then(response => response.json())
             .then(data => {
@@ -17,37 +54,32 @@ $(function() {
             .then(response => response.text())
             .then(data => {
                 var parser = new DOMParser()
-                var htmldoc = parser.parseFromString(data, 'text/html')
-                if (htmldoc.getElementById('usage-validation-region')) {
+                var bcaDoc = parser.parseFromString(data, 'text/html')
+                if (bcaDoc.getElementById('usage-validation-region')) {
                     window.open('https://www.bcassessment.ca//Property/Info/' + obj.homeId)
                     return
                 }
-                if (htmldoc) {
-                    console.log(htmldoc)
-                    assessmentAddress = htmldoc.getElementById('mainaddresstitle').textContent
-                    totalAssessment = htmldoc.getElementById('lblTotalAssessedValue').textContent
-                    if (htmldoc.getElementById('lblTotalAssessedLand')) {
-                        landAssessment = htmldoc.getElementById('lblTotalAssessedLand').textContent    
-                    }
-                    if (htmldoc.getElementById('lblTotalAssessedBuilding')) {
-                        buildingAssessment = htmldoc.getElementById('lblTotalAssessedBuilding').textContent  
-                    }
-                    $('#address').text(assessmentAddress)
-                    $('#totalAssessment').text(totalAssessment)
-                    $('#landAssessment').text(landAssessment)
-                    $('#buildingAssessment').text(buildingAssessment)
-                    $('#assessmentLink').click(function() {
-                        chrome.tabs.create({url: assessmentLink})
-                    })
+                
+                let { address, latest, previous } = collectDataFromBCADoc(bcaDoc, propertyIdMap)
 
-                    // chrome.storage.sync.set({'bcAssessment': {
-                    //     assessmentAddress: assessmentAddress,
-                    //     totalAssessment: totalAssessment,
-                    //     landAssessment: landAssessment,
-                    //     buildingAssessment: buildingAssessment,
-                    //     assessmentLink: assessmentLink
-                    // }})
-                }
+                $('#address').text(address)
+                $('.latest.total.value').text(latest.totalValue)
+                $('.latest.land.value').text(latest.landValue)
+                $('.latest.building.value').text(latest.buildingValue)
+                $('.previous.total.value').text(previous.totalValue)
+                $('.previous.land.value').text(previous.landValue)
+                $('.previous.building.value').text(previous.buildingValue)
+                $('#assessmentLink').click(function() {
+                    chrome.tabs.create({url: assessmentLink})
+                })
+
+                // chrome.storage.sync.set({'bcAssessment': {
+                //     assessmentAddress: assessmentAddress,
+                //     totalAssessment: totalAssessment,
+                //     landAssessment: landAssessment,
+                //     buildingAssessment: buildingAssessment,
+                //     assessmentLink: assessmentLink
+                // }})
             })
     })
 

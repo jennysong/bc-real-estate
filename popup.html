@@ -7,15 +7,37 @@
     </head>
     <body>
         <h3 id='address'>Address</h3>
-        <p>
-            Total: <span id='totalAssessment'>0</span>
-        </p>
-        <p>
-            Land Assessment: <span id='landAssessment'>0</span>
-        </p>
-        <p>
-            Building Assessment: <span id='buildingAssessment'>0</span>
-        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                    </th>
+                    <th>
+                        Latest
+                    </th>
+                    <th>
+                        Previous
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Land</th>
+                    <td class='latest land value'></td>
+                    <td class='previous land value'></td>
+                </tr>
+                <tr>
+                    <th>Building</th>
+                    <td class='latest building value'></td>
+                    <td class='previous building value'></td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td><strong  class='latest total value'/></td>
+                    <td><strong  class='previous total value'/></td>
+                </tr>
+            </tbody>
+        </table>
         <p>
             <a id='assessmentLink' href='#'>BC Assessment Page</a>
         </p>
