@@ -13,7 +13,6 @@ $(function() {
             insertInfo(assessment)
         }
         if (!assessment) {
-            console.log(result['bcAssessment'])
             BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress)
             fetch(BCAGetByAddress)
                 .then(response => response.json())
