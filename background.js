@@ -1,23 +1,3 @@
-// var timer = new Date().getTime()
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-//     if (changeInfo.status != 'complete' || tab.status != 'complete' || tab.url == undefined || lessThanOneMin()) {
-//         return;
-//     } 
-//     timer = new Date().getTime();
-//     setTimeout(() => {
-//         var REDFIN_REGEX = new RegExp(/https:\/\/www.redfin.ca\/bc\/.+\/.+\/home\/.+/);
-//         if (tab.url.match(REDFIN_REGEX)) {     
-//             chrome.tabs.executeScript({
-//                 // file: 'script.js'
-//                 code: 'alert("hi")'
-//             });
-//         }
-//     }, 500);
-// }); 
-// var lessThanOneMin = () => {
-//     return new Date().getTime() < timer + 1000
-// }
-
 var REDFIN_REGEX = new RegExp(/https:\/\/www.redfin.ca\/bc\/.+\/.+\/home\/.+/);
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
@@ -47,23 +27,3 @@ openScript = (url, address) => {
     }
     // Todo: Zolo
 }
-
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request.contentScriptQuery == "getBCAssessment") {
-            var homeId, assessmentLink;
-            var BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(request.address);
-            fetch(BCAGetByAddress)
-                .then(response => response.json())
-                .then(data => {
-                    homeId = data[0].value
-                    assessmentLink = 'https://www.bcassessment.ca//Property/Info/' + homeId
-                    return fetch(assessmentLink)
-                })
-                .then(response => response.text())
-                .then(assessInfo => sendResponse({doc: assessInfo, homeId: homeId, assessmentLink: assessmentLink}))
-            return true;
-        }
-    }
-);
