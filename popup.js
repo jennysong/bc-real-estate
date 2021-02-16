@@ -56,7 +56,7 @@ $(function() {
                 var parser = new DOMParser()
                 var bcaDoc = parser.parseFromString(data, 'text/html')
                 if (bcaDoc.getElementById('usage-validation-region')) {
-                    window.open('https://www.bcassessment.ca//Property/Info/' + obj.homeId)
+                    window.open(assessmentLink)
                     return
                 }
                 
