@@ -2,8 +2,8 @@ $(function() {
  
     let unitAddress, assessment, BCAGetByAddress, assessmentLink
 
-    chrome.storage.sync.get(['redfin', 'bcAssessment'], function(result) {
-        unitAddress = result['redfin'].address
+    chrome.storage.sync.get(['address', 'bcAssessment'], function(result) {
+        unitAddress = result['address'].address
         
         if (!unitAddress) {
             return
@@ -13,6 +13,7 @@ $(function() {
             insertInfo(assessment)
         }
         if (!assessment) {
+            // alert('sending')
             BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress)
             fetch(BCAGetByAddress)
                 .then(response => response.json())
