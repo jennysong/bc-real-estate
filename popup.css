@@ -1,3 +1,146 @@
+* {
+    box-sizing: border-box;
+}
 body {
-    width: 200px;
+    font-family: 'Poppins', sans-serif;
+    width: 440px;
+    min-height: 300px;
+    padding: 0;
+    margin: 0;
+}
+.loading .extra-information,
+.loading .previous-value,
+.loading .valuation:not(.total) {
+    display: none;
+}
+.header {
+    position: relative;
+    padding-top: 8px;
+    background-color: #29677F;
+    height: 50px;
+    padding-left: 20px;
+}
+.header .logo {
+    margin: 0;
+    display: inline-block;
+}
+.header .label {
+    position: absolute;
+    display: inline-block;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    background: black;
+    color: white;
+    font-size: 10px;
+    line-height: 14px;
+    border-radius: 4px;
+    vertical-align: middle;
+    bottom: 10px;
+    left: 250px;
+}
+
+.valuations {
+    padding: 30px 0 30px 100px;
+}
+.valuations.has-detailed-valuation .total.valuation {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+.valuation {
+    position: relative;
+}
+.valuation .bullet {
+    position: absolute;
+    left: -30px;
+    font-size: 18px;
+    line-height: 28px;
+}
+.valuation .value-line {
+    line-height: 28px;
+}
+.valuation .value {
+    font-size: 18px;
+}
+.valuation .changes {
+    display: inline-block;
+    margin: 0 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #999;
+}
+.valuation .positive.changes {
+    color: #4DB690;
+}
+.valuation .negative.changes {
+    color: #D44242;
+}
+.valuation .previous-value {
+    color: #999;
+    font-size: 14px;
+}
+
+.total.valuation .value {
+    font-size: 30px;
+    line-height: 40px;
+}
+.total.valuation .bullet {
+    font-size: 48px;
+    left: -60px;
+    top: 0;
+    line-height: 48px;
+}
+
+.total.valuation .refresh-icon {
+    opacity: 30%;
+    width: 16px;
+    height: 16px;
+    vertical-align: -3px;
+}
+
+.unknown.valuation {
+    display: none
+}
+
+
+.extra-information {
+    color: #333;
+    background: #eee;
+    font-size: 14px;
+    padding: 20px 30px;
+}
+.extra-item {
+    display: flex;
+    line-height: 22px;
+}
+.extra-item * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.extra-item .label {
+    flex: 0 0 120px;
+    font-size: 12px; 
+    text-transform: uppercase;
+}
+.extra-item .value {
+    flex: 0 1 100%;
+}
+.actions {
+    margin-top: 10px;
+}
+.btn, .btn:visited {
+    display: block;
+    font-size: 14px;
+    background: #ccc;
+    padding: 4px 10px;
+    border-radius: 8px;
+    text-align: center;
+    color: #333;
+    cursor: pointer;
+}
+.btn:hover, .btn:active {
+    background: #29677F;
+    color: white;
 }
