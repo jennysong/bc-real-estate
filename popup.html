@@ -1,45 +1,63 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel='stylesheet' type='text/css' href='popup.css'>
-        <script src='jquery-3.5.1.min.js'></script>
-        <script src='popup.js'></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <link rel='stylesheet' type='text/css' href='./popup.css'>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <script src='./jquery-3.5.1.min.js'></script>
+        <script src='./underscore-umd-min.js'></script>
+        <script src='./underscore.string-min.js'></script>
+        <script src='./popup.js'></script>
     </head>
-    <body>
-        <h3 id='address'>Address</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                    </th>
-                    <th>
-                        Latest
-                    </th>
-                    <th>
-                        Previous
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>Land</th>
-                    <td class='latest land value'></td>
-                    <td class='previous land value'></td>
-                </tr>
-                <tr>
-                    <th>Building</th>
-                    <td class='latest building value'></td>
-                    <td class='previous building value'></td>
-                </tr>
-                <tr>
-                    <th>Total</th>
-                    <td><strong  class='latest total value'/></td>
-                    <td><strong  class='previous total value'/></td>
-                </tr>
-            </tbody>
-        </table>
-        <p>
-            <a id='assessmentLink' href='#'>BC Assessment Page</a>
-        </p>
+    <body class='loading'>
+        <div class='header'>
+            <img class='logo' src='./img/bc-assessment-logo.png' width='220' height='42'/>
+            <span class='unofficial label'>unofficial</span>
+        </div>
+        <div class='valuations'>
+            <div class="total valuation">
+                <div class="bullet dollar">💎</div>
+                <div class="value-line">
+                    <span class="value">Loading</span>
+                    <span class='changes'></span>
+                    <span class='refresh-storage'><img class='refresh-icon' src='./img/refresh-icon.svg'/></span>
+                </div>
+                <div class="previous-value">Previously <span class='amount'></span></div>
+            </div>
+            <div class="land extra valuation">
+                <div class="bullet">🏞</div>
+                <div class="value-line">
+                    <span class="value"></span>
+                    <span class="changes"></span>
+                    <span class="previous-value">
+                        Previously <span class='amount'></span>
+                    </span>
+                </div>
+            </div>
+            <div class="building extra valuation">
+                <div class="bullet">🏠</div>
+                <div class="value-line">
+                    <span class="value"></span>
+                    <span class="changes"></span>
+                    <span class="previous-value">
+                        Previously <span class='amount'></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="extra-information">
+            <div class="extra-item-list">
+                <div class="extra-item">
+                    <div class="label">Address</div>
+                    <div class="original-address value"></div>
+                </div>
+            </div>
+            <div class="actions">
+                <a class="view-on-bc-assessment btn">
+                    View on <strong>bcassessment.ca</strong>
+                </a>
+            </div>
+        </div>
     </body>
 </html>
