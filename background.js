@@ -25,16 +25,16 @@ openScript = (url, address) => {
             var j = a.indexOf(',') 
             a = a.substring(i+1,j) + '-' + a.substring(0,i-1) + a.substring(j+1)
         }
-        chrome.storage.sync.set({'address': {address: a}})
+        chrome.storage.sync.set({'address': a})
     }
     // Realtor.ca
     if (url.match(REALTOR_REGEX)) {
         var a = address.split('For sale: ')[1].split(', British Columbia')[0]
-        chrome.storage.sync.set({'address': {address: a}})
+        chrome.storage.sync.set({'address': a})
     }
     // Todo: Zolo
     if (url.match(ZOLO_REGEX)) {
         var a = address.split(' — For Sale')[0]
-        chrome.storage.sync.set({'address': {address: a}})
+        chrome.storage.sync.set({'address': a})
     }
 }

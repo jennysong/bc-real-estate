@@ -1,19 +1,22 @@
 $(function() {
  
-    let unitAddress, assessment, BCAGetByAddress, assessmentLink
+    let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache
 
-    chrome.storage.sync.get(['address', 'bcAssessment'], function(result) {
-        unitAddress = result['address'].address
-        
+    chrome.storage.sync.get(['address', 'bcAssessment', 'bcACacheDate'], function(result) {
+        unitAddress = result['address']
         if (!unitAddress) {
             return
-        }
-        if (result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
+        } 
+
+        cachedTime = result['bcACacheDate']
+        currentTime = new Date().getTime()
+        shouldExpireCache = cachedTime && cachedTime+604800000 < currentTime
+        if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
             assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
             insertInfo(assessment)
         }
+
         if (!assessment) {
-            // alert('sending')
             BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress)
             fetch(BCAGetByAddress)
                 .then(response => response.json())
@@ -35,8 +38,11 @@ $(function() {
                         origAddress: unitAddress,
                         link: assessmentLink
                     }
-                    const storedAssessment = result['bcAssessment'] || []
-                    chrome.storage.sync.set({'bcAssessment': storedAssessment.concat(assessment)})
+                    const storedAssessment = shouldExpireCache? []: result['bcAssessment'] || []
+                    chrome.storage.sync.set({
+                        'bcAssessment': storedAssessment.concat(assessment),
+                        'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
+                    })
                     insertInfo(assessment)
                 })             
         }
