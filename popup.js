@@ -1,54 +1,53 @@
 $(function() {
- 
-    let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache
+    const loadPopup = () => {
+        let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache
+        chrome.storage.sync.get(['address', 'bcAssessment', 'bcACacheDate'], function(result) {
+            unitAddress = result['address']
+            if (!unitAddress) {
+                return
+            } 
 
-    chrome.storage.sync.get(['address', 'bcAssessment', 'bcACacheDate'], function(result) {
-        unitAddress = result['address']
-        if (!unitAddress) {
-            return
-        } 
+            cachedTime = result['bcACacheDate']
+            currentTime = new Date().getTime()
+            shouldExpireCache = cachedTime && cachedTime+604800000 < currentTime
+            if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
+                assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
+                insertInfo(assessment)
+            }
 
-        cachedTime = result['bcACacheDate']
-        currentTime = new Date().getTime()
-        shouldExpireCache = cachedTime && cachedTime+604800000 < currentTime
-        if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
-            assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
-            insertInfo(assessment)
-        }
-
-        if (!assessment) {
-            BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress)
-            fetch(BCAGetByAddress)
-                .then(response => response.json())
-                .then(data => {
-                    assessmentLink = 'https://www.bcassessment.ca//Property/Info/' + data[0].value
-                    return fetch(assessmentLink) 
-                })
-                .then(response => response.text())
-                .then(data => {
-                    const parser = new DOMParser()
-                    const bcaDoc = parser.parseFromString(data, 'text/html')
-                    if (bcaDoc.getElementById('usage-validation-region')) {
-                        window.open(assessmentLink)
-                        return
-                    }
-                    
-                    assessment = {
-                        ...collectDataFromBCADoc(bcaDoc, propertyIdMap),
-                        origAddress: unitAddress,
-                        link: assessmentLink
-                    }
-                    const storedAssessment = shouldExpireCache? []: result['bcAssessment'] || []
-                    chrome.storage.sync.set({
-                        'bcAssessment': storedAssessment.concat(assessment),
-                        'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
+            if (!assessment) {
+                BCAGetByAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr=' + encodeURIComponent(unitAddress)
+                fetch(BCAGetByAddress)
+                    .then(response => response.json())
+                    .then(data => {
+                        assessmentLink = 'https://www.bcassessment.ca//Property/Info/' + data[0].value
+                        return fetch(assessmentLink) 
                     })
-                    insertInfo(assessment)
-                })             
-        }
-    })
+                    .then(response => response.text())
+                    .then(data => {
+                        const parser = new DOMParser()
+                        const bcaDoc = parser.parseFromString(data, 'text/html')
+                        if (bcaDoc.getElementById('usage-validation-region')) {
+                            window.open(assessmentLink)
+                            return
+                        }                      
+                        assessment = {
+                            ...collectDataFromBCADoc(bcaDoc, propertyIdMap),
+                            origAddress: unitAddress,
+                            link: assessmentLink
+                        }
+                        const storedAssessment = shouldExpireCache? []: result['bcAssessment'] || []
+                        chrome.storage.sync.set({
+                            'bcAssessment': storedAssessment.concat(assessment),
+                            'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
+                        })
+                        insertInfo(assessment)
+                    })             
+            }
+        })
+    }
 
-    let collectDataFromBCADoc = (doc, map) => {
+    const collectDataFromBCADoc = (doc, map) => {
         let output = {}
         if (doc) {
             Object.keys(map).forEach(key => {
@@ -151,7 +150,7 @@ $(function() {
             $('body').removeClass('loading')
             
             let hasDetailedValuation = false
-            const { latest, previous, extraInformation, origAddress, link } = assessment
+            const { address, latest, previous, extraInformation, origAddress, link } = assessment
             const totalChanges = getChanges(latest.totalValue, previous.totalValue)
             const landChanges = getChanges(latest.landValue, previous.landValue)
             const buildingChanges = getChanges(latest.buildingValue, previous.buildingValue)
@@ -197,15 +196,16 @@ $(function() {
                 $('.valuations').addClass('has-detailed-valuation')
             }
             
-            if(origAddress) {
-                $('.original-address.value').text(origAddress)
+            if(address) {
+                $('.original-address.value').text(address)
             }
 
+            $(".home-detail").remove()
             const $extraItemList = $(".extra-item-list")
             _(extraInformationLabels).each((label, key) => {
                 const extraValue = s(extraInformation[key]).trim().value()
                 if (extraValue) {
-                    const $extraItem = $("<div class='extra-item'>")
+                    const $extraItem = $("<div class='extra-item home-detail'>")
                     $extraItem.append($("<div class='label'>").text(label))
                     $extraItem.append($("<div class='value'>").text(extraValue))
                     $extraItemList.append($extraItem)
@@ -216,5 +216,16 @@ $(function() {
                 chrome.tabs.create({url: link})
             })
         }
-    }  
+    }
+    
+    $('.refresh-storage').click(function() {
+        chrome.storage.sync.set({
+            'bcAssessment': [],
+            'bcACacheDate': new Date().getTime()
+        }, () => {
+            loadPopup()
+        })
+    })
+
+    loadPopup()
 })

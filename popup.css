@@ -98,6 +98,14 @@ body {
     vertical-align: -3px;
 }
 
+.total.valuation .refresh-storage :hover {
+    opacity: 60%;
+}
+
+.total.valuation .refresh-storage :active {
+    opacity: 100%;
+}
+
 .unknown.valuation {
     display: none
 }
