@@ -203,8 +203,14 @@ $(function() {
             $(".home-detail").remove()
             const $extraItemList = $(".extra-item-list")
             _(extraInformationLabels).each((label, key) => {
-                const extraValue = s(extraInformation[key]).trim().value()
+                let extraValue = s(extraInformation[key]).trim().value()
                 if (extraValue) {
+                    if (label=='Land Size') {
+                        const aLandInfo = extraValue.match(new RegExp(/(\d+) x (\d+)(.+)/)) 
+                        if (aLandInfo) {
+                            extraValue += ` (${aLandInfo[1]* aLandInfo[2] + aLandInfo[3]})`
+                        }
+                    }
                     const $extraItem = $("<div class='extra-item home-detail'>")
                     $extraItem.append($("<div class='label'>").text(label))
                     $extraItem.append($("<div class='value'>").text(extraValue))
