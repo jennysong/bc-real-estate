@@ -1,16 +1,15 @@
 {
-    "name": "Redfin Extension",
-    "description" : "Redfin Extension",
+    "name": "BC Real Estate",
+    "description" : "BC Real Estate",
     "version": "1.0.0",
     "browser_action": {
         "default_popup": "popup.html",
-        "default_icon": "redfin_extension.png"
+        "default_icon": "extension_icon.png"
     },
     "manifest_version": 2,
     "permissions": [
         "storage",
         "tabs",
-        "https://www.redfin.ca/*",
         "https://www.bcassessment.ca/*"
     ],
     "optional_permissions": [
