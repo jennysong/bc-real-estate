@@ -1,11 +1,13 @@
 $(function() {
     const loadPopup = () => {
         let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache
-        chrome.storage.sync.get(['address', 'bcAssessment', 'bcACacheDate'], function(result) {
-            unitAddress = result['address']
+        chrome.storage.sync.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
+            unitAddress = result['bcre-address']
             if (!unitAddress) {
                 return
             } 
+            // todo - add this price in the popup.
+            alert(result['bcre-price'])
 
             cachedTime = result['bcACacheDate']
             currentTime = new Date().getTime()

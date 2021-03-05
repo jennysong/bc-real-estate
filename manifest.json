@@ -10,7 +10,10 @@
     "permissions": [
         "storage",
         "tabs",
-        "https://www.bcassessment.ca/*"
+        "https://www.bcassessment.ca/*",
+        "https://www.redfin.ca/*",
+        "https://www.zolo.ca/*",
+        "https://www.realtor.ca/*"
     ],
     "optional_permissions": [
         "webRequest"
