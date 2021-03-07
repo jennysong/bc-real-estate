@@ -12,9 +12,10 @@ $(function() {
             cachedTime = result['bcACacheDate']
             currentTime = new Date().getTime()
             shouldExpireCache = cachedTime && cachedTime+604800000 < currentTime
+            
             if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
                 assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
-                insertInfo(assessment)
+                !!assessment && insertInfo(assessment)
             }
 
             if (!assessment) {
