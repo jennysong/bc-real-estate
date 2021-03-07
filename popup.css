@@ -15,28 +15,14 @@ body {
 }
 .header {
     position: relative;
-    padding-top: 8px;
-    background-color: #29677F;
+    padding-top: 9px;
+    background-color: #28597C;
     height: 50px;
-    padding-left: 32px;
+    padding-left: 28px;
 }
 .header .logo {
     margin: 0;
     display: inline-block;
-}
-.header .label {
-    position: absolute;
-    display: inline-block;
-    padding: 2px 8px;
-    text-transform: uppercase;
-    background: black;
-    color: white;
-    font-size: 10px;
-    line-height: 14px;
-    border-radius: 4px;
-    vertical-align: middle;
-    bottom: 10px;
-    left: 262px;
 }
 
 .valuations {
@@ -149,6 +135,6 @@ body {
     cursor: pointer;
 }
 .btn:hover, .btn:active {
-    background: #29677F;
+    background: #28597C;
     color: white;
 }
