@@ -15,7 +15,10 @@ $(function() {
             
             if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
                 assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
-                !!assessment && insertInfo(assessment)
+                if (assessment) {
+                    insertInfo(assessment)
+                    $('.refresh-storage').css('visibility', 'visible')
+                }
             }
 
             if (!assessment) {
@@ -45,6 +48,7 @@ $(function() {
                             'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
                         })
                         insertInfo(assessment)
+                        $('.refresh-storage').css('visibility', 'hidden')
                     })             
             }
         })
