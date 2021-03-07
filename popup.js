@@ -6,8 +6,7 @@ $(function() {
             if (!unitAddress) {
                 return
             } 
-            // todo - add this price in the popup.
-            alert(result['bcre-price'])
+            const listingPrice = result['bcre-price']
 
             cachedTime = result['bcACacheDate']
             currentTime = new Date().getTime()
@@ -16,7 +15,7 @@ $(function() {
             if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
                 assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
                 if (assessment) {
-                    insertInfo(assessment)
+                    insertInfo(listingPrice, assessment)
                     $('.refresh-storage').css('visibility', 'visible')
                 }
             }
@@ -47,7 +46,7 @@ $(function() {
                             'bcAssessment': storedAssessment.concat(assessment),
                             'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
                         })
-                        insertInfo(assessment)
+                        insertInfo(listingPrice, assessment)
                         $('.refresh-storage').css('visibility', 'hidden')
                     })             
             }
@@ -119,17 +118,17 @@ $(function() {
         secondFloorArea: "2nd Floor sqft",
         basementFinishArea: "Basement sqft",
         buildingStoreys: "Storeys",
-        bedrooms: "Bedrooms",
-        bathrooms: "Bathrooms",
-        carports: "Carports",
-        garages: "Garages",
+        // bedrooms: "Bedrooms",
+        // bathrooms: "Bathrooms",
+        // carports: "Carports",
+        // garages: "Garages",
     }
 
     const convertToInt = (string) => {
         return parseInt(string.replace(/[^0-9.]/g, ''))
     }
     
-    const getChanges = (current, previous) => {
+    const getDifference = (current, previous) => {
         if (!current || !previous) {
             return null
         }
@@ -148,11 +147,11 @@ $(function() {
             style = 'negative'
             prefix = ''
         } 
-        return { style, value: `${prefix}${value.toFixed(1)}%` }
+        return { style, value, visibleValue: `${prefix}${value.toFixed(1)}%` }
     }
     
 
-    const insertInfo = (assessment) => {
+    const insertInfo = (listingPrice, assessment) => {
         if (assessment) {
             if (!assessment.address) {
                 //TODO: show not found here. 
@@ -162,17 +161,49 @@ $(function() {
             
             let hasDetailedValuation = false
             const { address, latest, previous, extraInformation, origAddress, link } = assessment
-            const totalChanges = getChanges(latest.totalValue, previous.totalValue)
-            const landChanges = getChanges(latest.landValue, previous.landValue)
-            const buildingChanges = getChanges(latest.buildingValue, previous.buildingValue)
+            const totalDifference = getDifference(latest.totalValue, previous.totalValue)
+            const landDifference = getDifference(latest.landValue, previous.landValue)
+            const buildingDifference = getDifference(latest.buildingValue, previous.buildingValue)
             
             $('.total.valuation .value').text(latest.totalValue)
             $('.total.valuation .previous-value .amount').text(previous.totalValue)
             
-            if (totalChanges) {
+            if (totalDifference) {
                 $('.total.valuation .changes')
-                    .addClass(totalChanges.style)
-                    .text(totalChanges.value)
+                    .addClass(totalDifference.style)
+                    .text(totalDifference.visibleValue)
+            }
+            
+            const listingComparison = getDifference(listingPrice, latest.totalValue)
+            
+            if (listingComparison) {
+                let style
+                let messageStyle
+                
+                switch(true) {
+                    case listingComparison.value > 20:
+                        style = 'greedy'
+                        messageStyle = 'higher'
+                        break
+                    case listingComparison.value > 5:
+                        style = 'thinking'
+                        messageStyle = 'higher'
+                        break
+                    case listingComparison.value > 0.5:
+                        style = 'fair'
+                        messageStyle = 'higher'
+                        break
+                    case listingComparison.value >= 0:
+                        style = 'fair'
+                        messageStyle = 'equal'
+                        break
+                    case listingComparison.value < 0:
+                        style = 'fair'
+                        messageStyle = 'lower'
+                        break
+                }
+                Object.assign(listingComparison, { style, messageStyle })
+                hasListingPrice = true
             }
             
             if(latest.landValue) {
@@ -180,10 +211,10 @@ $(function() {
                 $('.land.valuation .previous-value .amount').text(previous.landValue)
                 hasDetailedValuation = true
                 
-                if (landChanges) {
+                if (landDifference) {
                     $('.land.valuation .changes')
-                        .addClass(landChanges.style)
-                        .text(landChanges.value)
+                        .addClass(landDifference.style)
+                        .text(landDifference.visibleValue)
                 }
             } else {
                 $('.land.valuation').addClass('unknown')
@@ -194,10 +225,10 @@ $(function() {
                 $('.building.valuation .previous-value .amount').text(previous.buildingValue)
                 hasDetailedValuation = true
                 
-                if (buildingChanges) {
+                if (buildingDifference) {
                     $('.building.valuation .changes')
-                        .addClass(buildingChanges.style)
-                        .text(buildingChanges.value)
+                        .addClass(buildingDifference.style)
+                        .text(buildingDifference.visibleValue)
                 }
             } else {
                 $('.building.valuation').addClass('unknown')
@@ -205,6 +236,25 @@ $(function() {
             
             if (hasDetailedValuation) {
                 $('.valuations').addClass('has-detailed-valuation')
+            }
+            
+            if (hasListingPrice) {
+                const { value, visibleValue, style, messageStyle } = listingComparison
+                const $listentComparison = $('.listing-comparison')
+                const $difference = $listentComparison.find(`.${messageStyle}.message .difference`)
+                
+                $('.valuations').addClass('has-listing-price')
+                
+                $listentComparison
+                    .addClass(style)
+                    .addClass(messageStyle)
+                
+                $listentComparison
+                    .find('.listing-price .amount')
+                    .text(`$${listingPrice}`)
+                
+                $difference.addClass(style)
+                $difference.find('.amount').text(visibleValue)
             }
             
             if(address) {

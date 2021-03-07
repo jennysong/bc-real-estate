@@ -28,18 +28,22 @@ body {
 .valuations {
     padding: 30px 0 30px 100px;
 }
-.valuations.has-detailed-valuation .total.valuation {
+.valuations:not(.has-listing-price).has-detailed-valuation .total.valuation {
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
     margin-bottom: 10px;
 }
+.valuations:not(.has-listing-price) .listing-comparison {
+    display: none;
+}
+
 .valuation {
     position: relative;
 }
 .valuation .bullet {
     position: absolute;
     left: -30px;
-    font-size: 18px;
+    font-size: 20px;
     line-height: 28px;
 }
 .valuation .value-line {
@@ -96,6 +100,46 @@ body {
     display: none
 }
 
+.listing-comparison {
+    position: relative;
+    margin: 10px 30px 10px 0;
+    padding: 10px 0;
+    border: 1px solid #ddd;
+    border-width: 1px 0;
+    line-height: 18px;
+    font-size: 13px;
+}
+.total.valuation .listing-comparison .bullet {    
+    left: -30px;
+    font-size: 20px;
+    line-height: 28px;
+    top: 6px;
+}
+
+.listing-comparison:not(.fair) .fair,
+.listing-comparison:not(.thinking) .thinking,
+.listing-comparison:not(.greedy) .greedy,
+.listing-comparison:not(.lower) .lower,
+.listing-comparison:not(.equal) .equal,
+.listing-comparison:not(.higher) .higher {
+    display: none
+}
+.listing-comparison .difference {
+    font-weight: bold;
+}
+.listing-comparison .fair.difference {
+    color: #4DB690;
+}
+.listing-comparison .thinking.difference {
+    color: #D48642;
+}
+.listing-comparison .greedy.difference {
+    color: #D44242;
+}
+.listing-comparison .listing-price {
+    font-size: 12px;
+    color: #999;
+}
 
 .extra-information {
     color: #333;
