@@ -149,6 +149,10 @@ $(function() {
 
     const insertInfo = (assessment) => {
         if (assessment) {
+            if (!assessment.address) {
+                //TODO: show not found here. 
+                alert('not found')
+            }
             $('body').removeClass('loading')
             
             let hasDetailedValuation = false

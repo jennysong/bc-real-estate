@@ -15,9 +15,6 @@
         "https://www.zolo.ca/*",
         "https://www.realtor.ca/*"
     ],
-    "optional_permissions": [
-        "webRequest"
-    ],
     "background": {
         "scripts": ["background.js"]
     },
