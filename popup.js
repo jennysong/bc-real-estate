@@ -1,5 +1,9 @@
 $(function() {
+    const $body = $('body')
+    
     const loadPopup = () => {
+        $body.attr('class', '')
+        $body.addClass('show-loading')
         let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache, fetchedFromBCA
         chrome.storage.sync.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
             unitAddress = result['bcre-address']
@@ -16,7 +20,6 @@ $(function() {
                 assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
                 if (assessment) {
                     insertInfo(assessment, { listingPrice })
-                    $('.refresh-storage').css('visibility', 'visible')
                 }
             }
 
@@ -48,7 +51,6 @@ $(function() {
                         })
                         fetchedFromBCA = true
                         insertInfo(assessment, { listingPrice, fetchedFromBCA })
-                        $('.refresh-storage').css('visibility', 'hidden')
                     })             
             }
         })
@@ -154,141 +156,159 @@ $(function() {
 
     const insertInfo = (assessment, { listingPrice, fetchedFromBCA }) => {
         if (assessment) {
-            const $body = $('body')
-            if (!assessment.address) {
-                //TODO: show not found here. 
-                alert('not found')
-            }
-            $body.removeClass('loading')
+            const { address, origAddress } = assessment
             
-            let hasDetailedValuation = false
-            const { address, latest, previous, extraInformation, origAddress, link } = assessment
-            const totalDifference = getDifference(latest.totalValue, previous.totalValue)
-            const landDifference = getDifference(latest.landValue, previous.landValue)
-            const buildingDifference = getDifference(latest.buildingValue, previous.buildingValue)
+            $body.removeClass('show-loading')
             
-            $('.total.valuation .value').text(latest.totalValue)
-            $('.total.valuation .previous-value .amount').text(previous.totalValue)
-            
-            if (totalDifference) {
-                $('.total.valuation .changes')
-                    .addClass(totalDifference.style)
-                    .text(totalDifference.visibleValue)
-            }
-            
-            const listingComparison = getDifference(listingPrice, latest.totalValue)
-            
-            if (listingComparison) {
-                let style
-                let messageStyle
-                
-                switch(true) {
-                    case listingComparison.value > 20:
-                        style = 'greedy'
-                        messageStyle = 'higher'
-                        break
-                    case listingComparison.value > 5:
-                        style = 'thinking'
-                        messageStyle = 'higher'
-                        break
-                    case listingComparison.value > 0.5:
-                        style = 'fair'
-                        messageStyle = 'higher'
-                        break
-                    case listingComparison.value >= 0:
-                        style = 'fair'
-                        messageStyle = 'equal'
-                        break
-                    case listingComparison.value < 0:
-                        style = 'fair'
-                        messageStyle = 'lower'
-                        break
-                }
-                Object.assign(listingComparison, { style, messageStyle })
-                hasListingPrice = true
-            }
-            
-            if(latest.landValue) {
-                $('.land.valuation .value').text(latest.landValue)    
-                $('.land.valuation .previous-value .amount').text(previous.landValue)
-                hasDetailedValuation = true
-                
-                if (landDifference) {
-                    $('.land.valuation .changes')
-                        .addClass(landDifference.style)
-                        .text(landDifference.visibleValue)
-                }
+            if (address) {
+                renderValuationsView(assessment, { listingPrice, fetchedFromBCA })
+            } else if (origAddress) {
+                renderNotFoundView({ origAddress })
             } else {
-                $('.land.valuation').addClass('unknown')
+                // todo: render search view
             }
-            
-            if(latest.buildingValue) {
-                $('.building.valuation .value').text(latest.buildingValue)
-                $('.building.valuation .previous-value .amount').text(previous.buildingValue)
-                hasDetailedValuation = true
-                
-                if (buildingDifference) {
-                    $('.building.valuation .changes')
-                        .addClass(buildingDifference.style)
-                        .text(buildingDifference.visibleValue)
-                }
-            } else {
-                $('.building.valuation').addClass('unknown')
-            }
-            
-            if (hasDetailedValuation) {
-                $body.addClass('has-detailed-valuation')
-            }
-            
-            if (fetchedFromBCA) {
-                $body.addClass('has-fetched-from-bca')
-            }
-            
-            if (hasListingPrice) {
-                const { value, visibleValue, style, messageStyle } = listingComparison
-                const $listentComparison = $('.listing-comparison')
-                const $difference = $listentComparison.find(`.${messageStyle}.message .difference`)
-                
-                $body.addClass('has-listing-price')
-                
-                $listentComparison
-                    .addClass(style)
-                    .addClass(messageStyle)
-                
-                $listentComparison
-                    .find('.listing-price .amount')
-                    .text(`$${listingPrice}`)
-                
-                $difference.addClass(style)
-                $difference.find('.amount').text(visibleValue)
-            }
-            
-            if(address) {
-                $('.original-address.value').text(address)
-            }
-
-            $(".home-detail").remove()
-            const $extraItemList = $(".extra-item-list")
-            _(extraInformationLabels).each((label, key) => {
-                let extraValue = s(extraInformation[key]).trim().value()
-                if (extraValue) {
-                    if (label=='Land Size') {
-                        const aLandInfo = extraValue.match(new RegExp(/(\d+) x (\d+)(.+)/)) 
-                        if (aLandInfo) {
-                            extraValue += ` (${aLandInfo[1]* aLandInfo[2] + aLandInfo[3]})`
-                        }
-                    }
-                    const $extraItem = $("<div class='extra-item home-detail'>")
-                    $extraItem.append($("<div class='label'>").text(label))
-                    $extraItem.append($("<div class='value'>").text(extraValue))
-                    $extraItemList.append($extraItem)
-                }
-            })
-            
-            $('.view-on-bc-assessment.btn').click(function() {
-                chrome.tabs.create({url: link})
-            })
         }
+    }
+    
+    const renderNotFoundView = ({ origAddress }) => {
+        $body.addClass('show-not-found-view')
+        $('.search.field').val(origAddress)
+        
+    }
+    
+    const renderValuationsView = (assessment, { listingPrice, fetchedFromBCA }) => {
+        const { address, latest, previous, extraInformation, origAddress, link } = assessment
+        
+        $body.addClass('show-valuations')
+        
+        let hasDetailedValuation = false
+        let renderedNotSearchableView = false
+
+        const totalDifference = getDifference(latest.totalValue, previous.totalValue)
+        const landDifference = getDifference(latest.landValue, previous.landValue)
+        const buildingDifference = getDifference(latest.buildingValue, previous.buildingValue)
+        
+        $('.total.valuation .value').text(latest.totalValue)
+        $('.total.valuation .previous-value .amount').text(previous.totalValue)
+        
+        if (totalDifference) {
+            $('.total.valuation .changes')
+                .addClass(totalDifference.style)
+                .text(totalDifference.visibleValue)
+        }
+        
+        const listingComparison = getDifference(listingPrice, latest.totalValue)
+        
+        if (listingComparison) {
+            let style
+            let messageStyle
+            
+            switch(true) {
+                case listingComparison.value > 20:
+                    style = 'greedy'
+                    messageStyle = 'higher'
+                    break
+                case listingComparison.value > 5:
+                    style = 'thinking'
+                    messageStyle = 'higher'
+                    break
+                case listingComparison.value > 0.5:
+                    style = 'fair'
+                    messageStyle = 'higher'
+                    break
+                case listingComparison.value >= 0:
+                    style = 'fair'
+                    messageStyle = 'equal'
+                    break
+                case listingComparison.value < 0:
+                    style = 'fair'
+                    messageStyle = 'lower'
+                    break
+            }
+            Object.assign(listingComparison, { style, messageStyle })
+            hasListingPrice = true
+        }
+        
+        if(latest.landValue) {
+            $('.land.valuation .value').text(latest.landValue)    
+            $('.land.valuation .previous-value .amount').text(previous.landValue)
+            hasDetailedValuation = true
+            
+            if (landDifference) {
+                $('.land.valuation .changes')
+                    .addClass(landDifference.style)
+                    .text(landDifference.visibleValue)
+            }
+        } else {
+            $('.land.valuation').addClass('unknown')
+        }
+        
+        if(latest.buildingValue) {
+            $('.building.valuation .value').text(latest.buildingValue)
+            $('.building.valuation .previous-value .amount').text(previous.buildingValue)
+            hasDetailedValuation = true
+            
+            if (buildingDifference) {
+                $('.building.valuation .changes')
+                    .addClass(buildingDifference.style)
+                    .text(buildingDifference.visibleValue)
+            }
+        } else {
+            $('.building.valuation').addClass('unknown')
+        }
+        
+        if (hasDetailedValuation) {
+            $body.addClass('has-detailed-valuation')
+        }
+        
+        if (fetchedFromBCA) {
+            $body.addClass('has-fetched-from-bca')
+        }
+        
+        if (hasListingPrice) {
+            const { value, visibleValue, style, messageStyle } = listingComparison
+            const $listentComparison = $('.listing-comparison')
+            const $difference = $listentComparison.find(`.${messageStyle}.message .difference`)
+            
+            $body.addClass('has-listing-price')
+            
+            $listentComparison
+                .addClass(style)
+                .addClass(messageStyle)
+            
+            $listentComparison
+                .find('.listing-price .amount')
+                .text(`$${listingPrice}`)
+            
+            $difference.addClass(style)
+            $difference.find('.amount').text(visibleValue)
+        }
+        
+        if(address) {
+            $('.original-address.value').text(address)
+        }
+
+        $('.home-detail').remove()
+        const $extraItemList = $(".extra-item-list")
+        _(extraInformationLabels).each((label, key) => {
+            let extraValue = s(extraInformation[key]).trim().value()
+            if (extraValue) {
+                if (label=='Land Size') {
+                    const aLandInfo = extraValue.match(new RegExp(/(\d+) x (\d+)(.+)/)) 
+                    if (aLandInfo) {
+                        extraValue += ` (${aLandInfo[1]* aLandInfo[2] + aLandInfo[3]})`
+                    }
+                }
+                const $extraItem = $("<div class='extra-item home-detail'>")
+                $extraItem.append($("<div class='label'>").text(label))
+                $extraItem.append($("<div class='value'>").text(extraValue))
+                $extraItemList.append($extraItem)
+            }
+        })
+        
+        $('.view-on-bc-assessment.btn').click(function() {
+            chrome.tabs.create({url: link})
+        })
     }
     
     $('.refresh-storage').click(function() {

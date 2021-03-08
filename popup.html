@@ -10,77 +10,101 @@
         <script src='./underscore.string-min.js'></script>
         <script src='./popup.js'></script>
     </head>
-    <body class='loading'>
+    <body>
         <div class='header'>
             <img class='logo' src='./img/bc-real-estate-logo.png' width='238' height='46'/>
         </div>
-        <div class='valuations'>
-            <div class="total valuation">
-                <div class="bullet dollar">💎</div>
-                <div class="value-line">
-                    <span class="value">Loading</span>
-                    <span class='changes'></span>
-                    <span class='refresh-storage'><img class='refresh-icon' src='./img/refresh-icon.svg'/></span>
-                </div>
-                <div class="previous-value">Previously <span class='amount'></span></div>
-                <div class="listing-comparison">
-                    <span class="fair bullet">😇</span>
-                    <span class="thinking bullet">🤔</span>
-                    <span class="greedy bullet">🙈</span>
-                    <span class="lower message">
-                        The seller is asking
-                        <span class='difference'>
-                            <span class='amount'></span> below
-                        </span>
-                        the assessment value. 
-                    </span>
-                    <span class="equal message">
-                        The listing price and assessment value are almost equal. Voilà!
-                    </span>
-                    <span class="higher message">
-                        The seller is asking 
-                        <span class='difference'>
-                            <span class='amount'></span> above
-                        </span>
-                        the assessment value. 
-                    </span>
-                    <span class="listing-price">
-                        Listing Price: <span class="amount"></span>
-                    </span>
-                </div>
-            </div>
-            <div class="land extra valuation">
-                <div class="bullet">🏞</div>
-                <div class="value-line">
-                    <span class="value"></span>
-                    <span class="changes"></span>
-                    <span class="previous-value">
-                        Previously <span class='amount'></span>
-                    </span>
-                </div>
-            </div>
-            <div class="building extra valuation">
-                <div class="bullet">🏠</div>
-                <div class="value-line">
-                    <span class="value"></span>
-                    <span class="changes"></span>
-                    <span class="previous-value">
-                        Previously <span class='amount'></span>
-                    </span>
-                </div>
+        <div class="loading-view message-view">
+            <div class="icon">⏳</div>
+            <div class="title">Loading</div>
+            <div class="message">
+                Fetching data from <a href='https://bcassessment.ca'>bcassessment.ca</a>
             </div>
         </div>
-        <div class="extra-information">
-            <div class="extra-item-list">
-                <div class="extra-item">
-                    <div class="label">Address</div>
-                    <div class="original-address value"></div>
+        <div class="not-found-view message-view">
+            <div class="icon">👻</div>
+            <div class="title">Address Not Searchable</div>
+            <div class="message">
+                <p>
+                    We have tried to search the address on
+                    <a href='https://bcassessment.ca'>bcassessment.ca</a>,
+                    but found no result.
+                </p>
+                <p>
+                    <input name='address' class='search field' readonly/>
+                </p>
+            </div>
+            
+        </div>
+        <div class="valuations-view">
+            <div class='valuations'>
+                <div class="total valuation">
+                    <div class="bullet dollar">💎</div>
+                    <div class="value-line">
+                        <span class="value"></span>
+                        <span class='changes'></span>
+                        <span class='refresh-storage'><img class='refresh-icon' src='./img/refresh-icon.svg'/></span>
+                    </div>
+                    <div class="previous-value">Previously <span class='amount'></span></div>
+                    <div class="listing-comparison">
+                        <span class="fair bullet">😇</span>
+                        <span class="thinking bullet">🤔</span>
+                        <span class="greedy bullet">🙈</span>
+                        <span class="lower message">
+                            The seller is asking
+                            <span class='difference'>
+                                <span class='amount'></span> below
+                            </span>
+                            the assessment value. 
+                        </span>
+                        <span class="equal message">
+                            The listing price and assessment value are almost equal. Voilà!
+                        </span>
+                        <span class="higher message">
+                            The seller is asking 
+                            <span class='difference'>
+                                <span class='amount'></span> above
+                            </span>
+                            the assessment value. 
+                        </span>
+                        <span class="listing-price">
+                            Listing Price: <span class="amount"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="land extra valuation">
+                    <div class="bullet">🏞</div>
+                    <div class="value-line">
+                        <span class="value"></span>
+                        <span class="changes"></span>
+                        <span class="previous-value">
+                            Previously <span class='amount'></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="building extra valuation">
+                    <div class="bullet">🏠</div>
+                    <div class="value-line">
+                        <span class="value"></span>
+                        <span class="changes"></span>
+                        <span class="previous-value">
+                            Previously <span class='amount'></span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div class="actions">
-                <a class="view-on-bc-assessment btn">
-                    View on <strong>bcassessment.ca</strong>
-                </a>
+            <div class="extra-information">
+                <div class="extra-item-list">
+                    <div class="extra-item">
+                        <div class="label">Address</div>
+                        <div class="original-address value"></div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a class="view-on-bc-assessment btn">
+                        View on <strong>bcassessment.ca</strong>
+                    </a>
+                </div>
             </div>
         </div>
     </body>
