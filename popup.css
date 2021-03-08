@@ -8,11 +8,25 @@ body {
     padding: 0;
     margin: 0;
 }
-.loading .extra-information,
-.loading .previous-value,
-.loading .valuation:not(.total) {
+body.loading .extra-information,
+body.loading .previous-value,
+body.loading .valuation:not(.total),
+body.loading .refresh-storage {
     display: none;
 }
+
+body:not(.has-listing-price).has-detailed-valuation .total.valuation {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+body:not(.has-listing-price) .listing-comparison {
+    display: none;
+}
+body.has-fetched-from-bca .refresh-storage {
+    display: none;
+}
+
 .header {
     position: relative;
     padding-top: 9px;
@@ -27,14 +41,6 @@ body {
 
 .valuations {
     padding: 30px 0 30px 100px;
-}
-.valuations:not(.has-listing-price).has-detailed-valuation .total.valuation {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-}
-.valuations:not(.has-listing-price) .listing-comparison {
-    display: none;
 }
 
 .valuation {
@@ -88,11 +94,11 @@ body {
     vertical-align: -3px;
 }
 
-.total.valuation .refresh-storage :hover {
+.refresh-storage:hover {
     opacity: 60%;
 }
 
-.total.valuation .refresh-storage :active {
+.refresh-storage:active {
     opacity: 100%;
 }
 

@@ -1,6 +1,6 @@
 $(function() {
     const loadPopup = () => {
-        let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache
+        let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache, fetchedFromBCA
         chrome.storage.sync.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
             unitAddress = result['bcre-address']
             if (!unitAddress) {
@@ -15,7 +15,7 @@ $(function() {
             if (!shouldExpireCache && result['bcAssessment'] && Array.isArray(result['bcAssessment'])) {
                 assessment = result['bcAssessment'].find(assess => assess.origAddress == unitAddress)
                 if (assessment) {
-                    insertInfo(listingPrice, assessment)
+                    insertInfo(assessment, { listingPrice })
                     $('.refresh-storage').css('visibility', 'visible')
                 }
             }
@@ -46,7 +46,8 @@ $(function() {
                             'bcAssessment': storedAssessment.concat(assessment),
                             'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
                         })
-                        insertInfo(listingPrice, assessment)
+                        fetchedFromBCA = true
+                        insertInfo(assessment, { listingPrice, fetchedFromBCA })
                         $('.refresh-storage').css('visibility', 'hidden')
                     })             
             }
@@ -151,13 +152,14 @@ $(function() {
     }
     
 
-    const insertInfo = (listingPrice, assessment) => {
+    const insertInfo = (assessment, { listingPrice, fetchedFromBCA }) => {
         if (assessment) {
+            const $body = $('body')
             if (!assessment.address) {
                 //TODO: show not found here. 
                 alert('not found')
             }
-            $('body').removeClass('loading')
+            $body.removeClass('loading')
             
             let hasDetailedValuation = false
             const { address, latest, previous, extraInformation, origAddress, link } = assessment
@@ -235,7 +237,11 @@ $(function() {
             }
             
             if (hasDetailedValuation) {
-                $('.valuations').addClass('has-detailed-valuation')
+                $body.addClass('has-detailed-valuation')
+            }
+            
+            if (fetchedFromBCA) {
+                $body.addClass('has-fetched-from-bca')
             }
             
             if (hasListingPrice) {
@@ -243,7 +249,7 @@ $(function() {
                 const $listentComparison = $('.listing-comparison')
                 const $difference = $listentComparison.find(`.${messageStyle}.message .difference`)
                 
-                $('.valuations').addClass('has-listing-price')
+                $body.addClass('has-listing-price')
                 
                 $listentComparison
                     .addClass(style)
