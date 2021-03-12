@@ -1,5 +1,7 @@
 if (site == 'redfin') {
-    price = document.getElementsByClassName("price-section")[0]
+    priceSection = document.getElementsByClassName("price-section")[0] ||
+        document.getElementsByClassName("info-block price")[0]
+    price = priceSection
         .getElementsByClassName("statsValue")[0]
         .firstElementChild
         .lastElementChild
