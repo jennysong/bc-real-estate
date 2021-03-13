@@ -22,7 +22,7 @@ body:not(.has-listing-price).has-detailed-valuation .total.valuation {
     padding-bottom: 10px;
     margin-bottom: 10px;
 }
-a:link, a:visited {
+a, a:visited {
     color: #28597C;
     text-decoration: none;
 }

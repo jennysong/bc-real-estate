@@ -311,6 +311,10 @@ $(function() {
         })
     }
     
+    $('.open-bc-assessment').click(function() {
+        chrome.tabs.create({url: 'https://www.bcassessment.ca'})
+    })
+
     $('.refresh-storage').click(function() {
         chrome.storage.sync.set({
             'bcAssessment': [],
