@@ -1,11 +1,12 @@
 if (site == 'redfin') {
     priceSection = document.getElementsByClassName("price-section")[0] ||
         document.getElementsByClassName("info-block price")[0]
-    price = priceSection
+    priceElement = priceSection
         .getElementsByClassName("statsValue")[0]
         .firstElementChild
         .lastElementChild
-        .innerHTML
+    
+    price = priceElement? priceElement.innerHTML : null
 }
 
 if (site == 'zolo') {
@@ -19,4 +20,4 @@ if (site == 'realtor') {
     price = document.getElementById('listingPrice').innerHTML
 }
 
-chrome.storage.sync.set({'bcre-price': price.replace(/" "|\$|\n/g, "")})
+chrome.storage.sync.set({'bcre-price': price? price.replace(/" "|\$|\n/g, "") : null})

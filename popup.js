@@ -1,12 +1,12 @@
 $(function() {
     const $body = $('body')
     
-    const loadPopup = () => {
+    const loadPopup = (searchedAddress) => {
         $body.attr('class', '')
         $body.addClass('show-loading')
         let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache, fetchedFromBCA
         chrome.storage.sync.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
-            unitAddress = result['bcre-address']
+            unitAddress = searchedAddress || result['bcre-address']
             if (!unitAddress) {
                 return
             } 
@@ -36,6 +36,7 @@ $(function() {
                         const parser = new DOMParser()
                         const bcaDoc = parser.parseFromString(data, 'text/html')
                         if (bcaDoc.getElementById('usage-validation-region')) {
+                            alert('Before you proceed, please complete the captcha for BC Assessment.')
                             window.open(assessmentLink)
                             return
                         }                      
@@ -66,7 +67,6 @@ $(function() {
                         if (targetElement)
                             output[key] = targetElement.textContent
                         else {
-                            console.warn(`cannot find element by id: ${map[key]}`)
                             output[key] = null
                         }
                         break;
@@ -172,8 +172,7 @@ $(function() {
     
     const renderNotFoundView = ({ origAddress }) => {
         $body.addClass('show-not-found-view')
-        $('.search.field').val(origAddress)
-        
+        $('#searchbox').val(origAddress)        
     }
     
     const renderValuationsView = (assessment, { listingPrice, fetchedFromBCA }) => {
@@ -182,7 +181,7 @@ $(function() {
         $body.addClass('show-valuations')
         
         let hasDetailedValuation = false
-        let renderedNotSearchableView = false
+        let hasListingPrice = false
 
         const totalDifference = getDifference(latest.totalValue, previous.totalValue)
         const landDifference = getDifference(latest.landValue, previous.landValue)
@@ -322,6 +321,24 @@ $(function() {
         }, () => {
             loadPopup()
         })
+    })
+
+    $('#searchbox')[0].addEventListener('input', (event) => {
+        if (event.target.value.length >= 3) {
+            console.log(event)
+            BCASearchAddress = 'https://www.bcassessment.ca/Property/Search/GetByAddress?addr='+encodeURIComponent(event.target.value)
+            fetch(BCASearchAddress)
+                .then(response => response.json())
+                .then(data => {
+                    $('#options').empty()
+                    data.forEach((home) => {
+                        $('#options').append(`<option>${home.label}</option>`)
+                    })
+                })
+        }
+    })
+    $('#searchbox')[0].addEventListener('change', (event) => {
+        loadPopup(event.target.value)
     })
 
     loadPopup()

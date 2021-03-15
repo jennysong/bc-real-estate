@@ -26,12 +26,13 @@
             <div class="title">Address Not Searchable</div>
             <div class="message">
                 <p>
-                    We have tried to search the address on
+                    We tried to search the address on
                     <a class='open-bc-assessment'>bcassessment.ca</a>,
                     but found no result.
                 </p>
                 <p>
-                    <input name='address' class='search field' readonly/>
+                    <input id='searchbox' list='options' class='search field'>
+                    <datalist id='options'></datalist>
                 </p>
             </div>
             
@@ -45,7 +46,7 @@
                         <span class='changes'></span>
                         <span class='refresh-storage'><img class='refresh-icon' src='./img/refresh-icon.svg'/></span>
                     </div>
-                    <div class="previous-value">Previously <span class='amount'></span></div>
+                    <div class="previous-value">Previous year: <span class='amount'></span></div>
                     <div class="listing-comparison">
                         <span class="fair bullet">😇</span>
                         <span class="thinking bullet">🤔</span>
