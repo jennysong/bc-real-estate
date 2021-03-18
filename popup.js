@@ -5,7 +5,7 @@ $(function() {
         $body.attr('class', '')
         $body.addClass('show-loading')
         let unitAddress, assessment, BCAGetByAddress, assessmentLink, cachedTime, currentTime, shouldExpireCache, fetchedFromBCA
-        chrome.storage.sync.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
+        chrome.storage.local.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
             unitAddress = searchedAddress || result['bcre-address']
             if (!unitAddress) {
                 return
@@ -46,7 +46,7 @@ $(function() {
                             link: assessmentLink
                         }
                         const storedAssessment = shouldExpireCache? []: result['bcAssessment'] || []
-                        chrome.storage.sync.set({
+                        chrome.storage.local.set({
                             'bcAssessment': storedAssessment.concat(assessment),
                             'bcACacheDate': shouldExpireCache? currentTime : cachedTime || currentTime
                         })
@@ -315,7 +315,7 @@ $(function() {
     })
 
     $('.refresh-storage').click(function() {
-        chrome.storage.sync.set({
+        chrome.storage.local.set({
             'bcAssessment': [],
             'bcACacheDate': new Date().getTime()
         }, () => {

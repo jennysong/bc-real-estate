@@ -43,7 +43,7 @@ var getHomeAddress = (site, address) => {
     if (site === 'zolo') {
         var a = address.split(' — For Sale')[0].split(' | Zolo.ca')[0]
     }
-    chrome.storage.sync.set({'bcre-address': a})
+    chrome.storage.local.set({'bcre-address': a})
 }
 
 

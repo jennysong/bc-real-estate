@@ -20,4 +20,4 @@ if (site == 'realtor') {
     price = document.getElementById('listingPrice').innerHTML
 }
 
-chrome.storage.sync.set({'bcre-price': price? price.replace(/" "|\$|\n/g, "") : null})
+chrome.storage.local.set({'bcre-price': price? price.replace(/" "|\$|\n/g, "") : null})
