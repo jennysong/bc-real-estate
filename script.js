@@ -1,3 +1,4 @@
+var price = null
 if (site == 'redfin') {
     priceSection = document.getElementsByClassName("price-section")[0] ||
         document.getElementsByClassName("info-block price")[0]

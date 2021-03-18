@@ -19,16 +19,15 @@ var getHomeDetails = (url, address) => {
         url.match(REALTOR_REGEX)? 'realtor' :
         url.match(ZOLO_REGEX)? 'zolo' : null
     
-    if (site) {
-        getHomeAddress(site, address)
-        getHomePrice(site)
-    }
+    getHomeAddress(site, address)
+    getHomePrice(site)
 }
 
 var getHomeAddress = (site, address) => {
+    var a = null
     // Redfin
     if (site === 'redfin') { 
-        var a = address.split(', BC')[0]
+        a = address.split(', BC')[0]
         var i = a.indexOf('#')
         if (i > 0) {
             var j = a.indexOf(',') 
@@ -37,22 +36,25 @@ var getHomeAddress = (site, address) => {
     }
     // Realtor.ca
     if (site === 'realtor') {
-        var a = address.split('For sale: ')[1].split(', British Columbia')[0]
+        a = address.split('For sale: ')[1].split(', British Columbia')[0]
     }
     // Zolo
     if (site === 'zolo') {
-        var a = address.split(' — For Sale')[0].split(' | Zolo.ca')[0]
+        a = address.split(' — For Sale')[0].split(' | Zolo.ca')[0]
     }
+
     chrome.storage.local.set({'bcre-address': a})
 }
 
 
 var getHomePrice = (site) => {
-    chrome.tabs.executeScript({
-        code: `var site = "${site}"`
-    }, () => {
+    if (site) {
         chrome.tabs.executeScript({
-            file: 'script.js'
+            code: `var site = "${site}"`
+        }, () => {
+            chrome.tabs.executeScript({
+                file: 'script.js'
+            })
         })
-    })
+    }
 }

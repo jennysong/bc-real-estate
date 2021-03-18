@@ -8,6 +8,8 @@ $(function() {
         chrome.storage.local.get(['bcre-address', 'bcre-price', 'bcAssessment', 'bcACacheDate'], function(result) {
             unitAddress = searchedAddress || result['bcre-address']
             if (!unitAddress) {
+                $body.removeClass('show-loading')
+                renderNotFoundView()
                 return
             } 
             const listingPrice = result['bcre-price']
@@ -163,14 +165,14 @@ $(function() {
             if (address) {
                 renderValuationsView(assessment, { listingPrice, fetchedFromBCA })
             } else if (origAddress) {
-                renderNotFoundView({ origAddress })
+                renderNotFoundView(origAddress)
             } else {
                 // todo: render search view
             }
         }
     }
     
-    const renderNotFoundView = ({ origAddress }) => {
+    const renderNotFoundView = (origAddress) => {
         $body.addClass('show-not-found-view')
         $('#searchbox').val(origAddress)        
     }
