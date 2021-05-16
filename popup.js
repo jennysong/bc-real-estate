@@ -12,7 +12,7 @@ $(function() {
                 renderNotFoundView()
                 return
             } 
-            const listingPrice = result['bcre-price']
+            const listingPrice = searchedAddress? null : result['bcre-price']
 
             cachedTime = result['bcACacheDate']
             currentTime = new Date().getTime()
