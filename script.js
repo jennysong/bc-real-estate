@@ -12,8 +12,7 @@ if (site == 'redfin') {
 
 if (site == 'zolo') {
     price = document.getElementsByClassName("listing-price")[0]
-        .getElementsByClassName("bold")[0]
-        .firstElementChild
+        .getElementsByClassName("priv")[0]
         .innerHTML
 }
 

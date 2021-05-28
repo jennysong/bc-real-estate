@@ -30,7 +30,7 @@ $(function() {
                 fetch(BCAGetByAddress)
                     .then(response => response.json())
                     .then(data => {
-                        assessmentLink = 'https://www.bcassessment.ca//Property/Info/' + data[0].value
+                        assessmentLink = 'https://www.bcassessment.ca/Property/Info/' + data[0].value
                         return fetch(assessmentLink) 
                     })
                     .then(response => response.text())
@@ -39,7 +39,7 @@ $(function() {
                         const bcaDoc = parser.parseFromString(data, 'text/html')
                         if (bcaDoc.getElementById('usage-validation-region')) {
                             alert('Before you proceed, please complete the captcha for BC Assessment.')
-                            window.open(assessmentLink)
+                            chrome.tabs.create({url: assessmentLink, active: true});
                             return
                         }                      
                         assessment = {

@@ -43,6 +43,12 @@ var getHomeAddress = (site, address) => {
         a = address.split(' — For Sale')[0].split(' | Zolo.ca')[0]
     }
 
+    if (a) {
+        a = a.toUpperCase()
+            .replace(' CIRCLE', ' CIR')
+            .replace(' BLVD', ' BOULEVARD')
+    }
+
     chrome.storage.local.set({'bcre-address': a})
 }
 
